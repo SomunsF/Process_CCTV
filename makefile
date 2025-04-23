@@ -1,6 +1,6 @@
 make:
-	g++ -std=c++17 1.cpp -o 1 -lncurses -pthread
+	g++ -std=c++17 main.cpp -o main -lncurses -pthread
 
 
 delete:
-	-rm 1 process_monitor.log
+	-rm main process_monitor.log
