@@ -39,16 +39,18 @@ using namespace std;
 // ------------------------
 // 数据结构及全局变量
 // ------------------------
-struct ProcessInfo {
-    int pid;
-    string name;
-    double cpu_usage; // 百分比
-    double mem_usage; // 百分比
+class ProcessInfo {
+    public:
+        int pid;
+        string name;
+        double cpu_usage; // 百分比
+        double mem_usage; // 百分比
 };
 
-struct ProcessStatsHistory {
-    deque<double> cpu_history;
-    deque<double> mem_history;
+class ProcessStatsHistory {
+    public:
+        deque<double> cpu_history;
+        deque<double> mem_history;
 };
 unordered_map<int, ProcessStatsHistory> g_processHistory;
 
@@ -60,9 +62,10 @@ atomic<bool> g_running(true);
 string g_filter = ""; // 若不为空则仅显示名称包含此子串的进程
 
 // 上一次采样时保存的 CPU 时间数据
-struct CpuTimes {
-    long utime;
-    long stime;
+class CpuTimes {
+    public:
+        long utime;
+        long stime;
 };
 map<int, CpuTimes> prevCpuTimes;
 
@@ -93,7 +96,7 @@ vector<int> get_all_pids() {
     vector<int> pids;
     DIR* dir = opendir("/proc");
     if(!dir) return pids;
-    struct dirent* entry;
+    class dirent* entry;
     while((entry = readdir(dir)) != nullptr) {
         if(entry->d_type == DT_DIR) {
             string dir_name = entry->d_name;
@@ -320,7 +323,7 @@ string generate_json() {
 // 修改 http_server 为非阻塞版本
 void http_server(int port = 8080) {
     int server_fd, client_socket;
-    struct sockaddr_in address;
+    class sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
     
@@ -342,7 +345,7 @@ void http_server(int port = 8080) {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
     
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+    if (bind(server_fd, (class sockaddr *)&address, sizeof(address)) < 0) {
         perror("bind failed");
         close(server_fd);
         return;
@@ -362,7 +365,7 @@ void http_server(int port = 8080) {
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(server_fd, &readfds);
-        struct timeval tv;
+        class timeval tv;
         tv.tv_sec = 1;
         tv.tv_usec = 0;
         
@@ -377,7 +380,7 @@ void http_server(int port = 8080) {
         }
         
         if (FD_ISSET(server_fd, &readfds)) {
-            client_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+            client_socket = accept(server_fd, (class sockaddr *)&address, (socklen_t*)&addrlen);
             if (client_socket < 0) {
                 // 非阻塞模式下，可能会返回 EWOULDBLOCK/EAGAIN，不必报错
                 if(errno != EWOULDBLOCK && errno != EAGAIN)
